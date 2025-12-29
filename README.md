@@ -13,6 +13,7 @@ Supabase SQL Editor'da `supabase/migrations/001_init.sql` dosyasını çalışt�
 Ardından içerik ve SEO alanları için sırasıyla `supabase/migrations/002_content.sql`, `003_home_updates.sql` ve `004_seo_articles.sql` dosyalarını çalıştırın.
 Jüri üyeleri ve otel adresi/görsel alanları için `supabase/migrations/005_jury_hotel.sql` dosyasını çalıştırın.
 Logo boyutu ve sadece logo gösterimi için `supabase/migrations/006_logo_settings.sql` dosyasını çalıştırın.
+Otel fotoğraf galerisi için `supabase/migrations/007_hotel_gallery.sql` dosyasını çalıştırın.
 
 ### 3) Storage bucket'ları oluştur
 Supabase Storage → Buckets bölümünde aşağıdaki bucket'ları oluşturun:

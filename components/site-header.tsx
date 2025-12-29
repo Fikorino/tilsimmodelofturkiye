@@ -24,7 +24,7 @@ export function SiteHeader({
   logoSize?: number | null;
   logoOnly?: boolean | null;
 }) {
-  const size = logoSize && logoSize > 0 ? logoSize : 56;
+  const size = logoSize && logoSize > 0 ? logoSize : 120;
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-bg/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-6">

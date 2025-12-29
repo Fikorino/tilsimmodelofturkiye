@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getJuryMembers, getPublicContent } from "@/lib/data";
+import { getHotelPhotos, getJuryMembers, getPublicContent } from "@/lib/data";
 import { MotionReveal } from "@/components/motion-reveal";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 
 export default async function HomePage() {
   const { siteSettings, homeSections, timelineItems, faqItems, sponsorLogos } = await getPublicContent();
-  const juryMembers = await getJuryMembers();
+  const [juryMembers, hotelPhotos] = await Promise.all([getJuryMembers(), getHotelPhotos()]);
 
   const hero = homeSections
     ? {
@@ -201,24 +201,36 @@ export default async function HomePage() {
             <p className="mt-4 text-muted text-lg">{hero.hotelBody}</p>
           </MotionReveal>
           <div className="mt-8 grid gap-6 md:grid-cols-2">
-            {hero.hotelImageUrl ? (
-              <Image
-                src={hero.hotelImageUrl}
-                alt="Otel görseli"
-                width={520}
-                height={360}
-                className="h-64 w-full rounded-2xl object-cover"
-                unoptimized
-              />
-            ) : (
-              <div className="glass flex h-64 items-center justify-center rounded-2xl text-sm text-muted">
-                Otel görseli eklenebilir
-              </div>
-            )}
-            <div className="glass rounded-2xl p-6">
-              {hero.hotelAddress && (
-                <p className="text-sm text-muted">Adres: {hero.hotelAddress}</p>
+            <div className="grid gap-4">
+              {hotelPhotos.length ? (
+                hotelPhotos.map((photo: any) => (
+                  <Image
+                    key={photo.id}
+                    src={photo.photo_url}
+                    alt={photo.title || "Otel görseli"}
+                    width={520}
+                    height={360}
+                    className="h-52 w-full rounded-2xl object-cover"
+                    unoptimized
+                  />
+                ))
+              ) : hero.hotelImageUrl ? (
+                <Image
+                  src={hero.hotelImageUrl}
+                  alt="Otel görseli"
+                  width={520}
+                  height={360}
+                  className="h-64 w-full rounded-2xl object-cover"
+                  unoptimized
+                />
+              ) : (
+                <div className="glass flex h-64 items-center justify-center rounded-2xl text-sm text-muted">
+                  Otel görseli eklenebilir
+                </div>
               )}
+            </div>
+            <div className="glass rounded-2xl p-6">
+              {hero.hotelAddress && <p className="text-sm text-muted">Adres: {hero.hotelAddress}</p>}
               {hero.hotelMapUrl && (
                 <a
                   href={hero.hotelMapUrl}

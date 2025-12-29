@@ -80,3 +80,9 @@ export async function getJuryMembers() {
   const { data } = await supabase.from("jury_members").select("*").order("order", { ascending: true });
   return data ?? [];
 }
+
+export async function getHotelPhotos() {
+  const supabase = createSupabaseServerComponentClient();
+  const { data } = await supabase.from("hotel_photos").select("*").order("order", { ascending: true });
+  return data ?? [];
+}

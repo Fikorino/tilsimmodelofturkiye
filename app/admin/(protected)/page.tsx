@@ -2,12 +2,14 @@ import { signOut } from "@/app/actions/auth";
 import {
   addArticle,
   addFaqItem,
+  addHotelPhoto,
   addJuryMember,
   addSponsorLogo,
   addSponsorPackage,
   addTimelineItem,
   deleteArticle,
   deleteFaqItem,
+  deleteHotelPhoto,
   deleteJuryMember,
   deleteSponsorLogo,
   deleteSponsorPackage,
@@ -18,6 +20,7 @@ import {
   upsertSiteSettings,
   updateArticle,
   updateFaqItem,
+  updateHotelPhoto,
   updateJuryMember,
   updateSponsorPackage,
   updateTimelineItem,
@@ -80,6 +83,7 @@ export default async function AdminPage({
     { data: appContentRow },
     { data: articles },
     { data: juryMembers },
+    { data: hotelPhotos },
     { data: contestantApplications },
     { data: sponsorApplications },
   ] = await Promise.all([
@@ -93,6 +97,7 @@ export default async function AdminPage({
     supabase.from("app_content").select("content").single(),
     supabase.from("articles").select("*").order("created_at", { ascending: false }),
     supabase.from("jury_members").select("*").order("order", { ascending: true }),
+    supabase.from("hotel_photos").select("*").order("order", { ascending: true }),
     contestantQuery,
     sponsorQuery,
   ]);
@@ -118,6 +123,7 @@ export default async function AdminPage({
             <TabsTrigger value="timeline">Takvim</TabsTrigger>
             <TabsTrigger value="jury">Jüri</TabsTrigger>
             <TabsTrigger value="faq">SSS</TabsTrigger>
+            <TabsTrigger value="hotel">Otel</TabsTrigger>
             <TabsTrigger value="sponsors">Sponsorlar</TabsTrigger>
             <TabsTrigger value="legal">Yasal</TabsTrigger>
             <TabsTrigger value="articles">Makaleler</TabsTrigger>
@@ -199,7 +205,7 @@ export default async function AdminPage({
                 </div>
                 <div className="grid gap-2">
                   <Label>Logo Boyutu (px)</Label>
-                  <Input name="logoSize" type="number" defaultValue={siteSettings?.logo_size ?? 56} />
+                  <Input name="logoSize" type="number" defaultValue={siteSettings?.logo_size ?? 120} />
                 </div>
                 <label className="flex items-center gap-3 text-sm">
                   <input type="checkbox" name="logoOnly" defaultChecked={siteSettings?.logo_only ?? false} />
@@ -268,26 +274,6 @@ export default async function AdminPage({
                   <Textarea name="prizesBody" defaultValue={homeSections?.prizes_body ?? ""} />
                 </div>
                 <div className="grid gap-2">
-                  <Label>Otel Bilgileri Başlığı</Label>
-                  <Input name="hotelTitle" defaultValue={homeSections?.hotel_title ?? ""} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Otel Bilgileri Açıklaması</Label>
-                  <Textarea name="hotelBody" defaultValue={homeSections?.hotel_body ?? ""} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Otel Görsel URL</Label>
-                  <Input name="hotelImageUrl" defaultValue={homeSections?.hotel_image_url ?? ""} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Otel Adres</Label>
-                  <Input name="hotelAddress" defaultValue={homeSections?.hotel_address ?? ""} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Google Maps Linki</Label>
-                  <Input name="hotelMapUrl" defaultValue={homeSections?.hotel_map_url ?? ""} />
-                </div>
-                <div className="grid gap-2">
                   <Label>SSS Başlığı</Label>
                   <Input name="faqTitle" defaultValue={homeSections?.faq_title ?? ""} />
                 </div>
@@ -307,6 +293,65 @@ export default async function AdminPage({
                   <Button type="submit">Kaydet</Button>
                 </div>
               </form>
+            </section>
+          </TabsContent>
+
+          <TabsContent value="hotel">
+            <section className="glass rounded-2xl p-6">
+              <h2 className="text-xl font-semibold">Otel Bilgileri</h2>
+              <form action={upsertHomeSections} className="mt-6 grid gap-4">
+                <div className="grid gap-2">
+                  <Label>Otel Bilgileri Başlığı</Label>
+                  <Input name="hotelTitle" defaultValue={homeSections?.hotel_title ?? ""} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Otel Bilgileri Açıklaması</Label>
+                  <Textarea name="hotelBody" defaultValue={homeSections?.hotel_body ?? ""} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Otel Görsel URL</Label>
+                  <Input name="hotelImageUrl" defaultValue={homeSections?.hotel_image_url ?? ""} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Otel Adres</Label>
+                  <Input name="hotelAddress" defaultValue={homeSections?.hotel_address ?? ""} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Google Maps Linki</Label>
+                  <Input name="hotelMapUrl" defaultValue={homeSections?.hotel_map_url ?? ""} />
+                </div>
+                <div className="sticky top-24 flex justify-end">
+                  <Button type="submit">Kaydet</Button>
+                </div>
+              </form>
+            </section>
+
+            <section className="glass rounded-2xl p-6 mt-10">
+              <h2 className="text-xl font-semibold">Otel Fotoğrafları</h2>
+              <form action={addHotelPhoto} className="mt-6 grid gap-3 md:grid-cols-2">
+                <Input name="title" placeholder="Fotoğraf başlığı (opsiyonel)" />
+                <Input name="photoUrl" placeholder="Fotoğraf URL" />
+                <Input name="order" placeholder="Sıra" type="number" />
+                <Button type="submit">Ekle</Button>
+              </form>
+              <div className="mt-6 grid gap-4">
+                {hotelPhotos?.map((photo: any) => (
+                  <form key={photo.id} action={updateHotelPhoto} className="grid gap-3 md:grid-cols-2">
+                    <input type="hidden" name="id" value={photo.id} />
+                    <Input name="title" defaultValue={photo.title ?? ""} />
+                    <Input name="photoUrl" defaultValue={photo.photo_url} />
+                    <Input name="order" type="number" defaultValue={photo.order ?? 0} />
+                    <div className="flex gap-2">
+                      <Button type="submit" size="sm">
+                        Güncelle
+                      </Button>
+                      <Button type="submit" formAction={deleteHotelPhoto} variant="outline" size="sm">
+                        Sil
+                      </Button>
+                    </div>
+                  </form>
+                ))}
+              </div>
             </section>
           </TabsContent>
 

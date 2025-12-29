@@ -385,3 +385,35 @@ export async function deleteJuryMember(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/");
 }
+
+export async function addHotelPhoto(formData: FormData) {
+  const supabase = createSupabaseAdminClient();
+  await supabase.from("hotel_photos").insert({
+    title: formData.get("title"),
+    photo_url: formData.get("photoUrl"),
+    order: Number(formData.get("order") || 0),
+  });
+  revalidatePath("/admin");
+  revalidatePath("/");
+}
+
+export async function updateHotelPhoto(formData: FormData) {
+  const supabase = createSupabaseAdminClient();
+  await supabase
+    .from("hotel_photos")
+    .update({
+      title: formData.get("title"),
+      photo_url: formData.get("photoUrl"),
+      order: Number(formData.get("order") || 0),
+    })
+    .eq("id", Number(formData.get("id")));
+  revalidatePath("/admin");
+  revalidatePath("/");
+}
+
+export async function deleteHotelPhoto(formData: FormData) {
+  const supabase = createSupabaseAdminClient();
+  await supabase.from("hotel_photos").delete().eq("id", Number(formData.get("id")));
+  revalidatePath("/admin");
+  revalidatePath("/");
+}
