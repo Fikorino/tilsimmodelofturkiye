@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0b0b0d;
+  --fg: #f6f3ea;
+  --gold: #d6b25e;
+  --gold2: #b9923b;
+  --card: rgba(17, 17, 20, 0.75);
+  --border: rgba(246, 243, 234, 0.12);
+  --muted: rgba(246, 243, 234, 0.6);
+  --font-sans: "Inter";
+  --font-display: "Playfair Display";
+}
+
+.light {
+  --bg: #f9f7f1;
+  --fg: #0b0b0d;
+  --card: rgba(255, 255, 255, 0.9);
+  --border: rgba(11, 11, 13, 0.1);
+  --muted: rgba(11, 11, 13, 0.6);
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-bg text-fg antialiased;
+}
+
+.glass {
+  background: var(--card);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+
+.section-title {
+  @apply font-display text-2xl md:text-3xl tracking-tight;
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+.link-gold {
+  color: var(--gold);
+}
