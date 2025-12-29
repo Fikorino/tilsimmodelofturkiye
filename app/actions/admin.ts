@@ -340,6 +340,12 @@ export async function deleteArticle(formData: FormData) {
 
 export async function addJuryMember(formData: FormData) {
   const supabase = createSupabaseAdminClient();
+  const photoFile = formData.get("photoFile") as File | null;
+  let photoUrl = formData.get("photoUrl") || null;
+  if (photoFile && photoFile.size > 0) {
+    const upload = await uploadAdminFile("site_uploads", photoFile, "jury");
+    photoUrl = upload.url;
+  }
   const socials = {
     instagram: formData.get("instagram") || null,
     tiktok: formData.get("tiktok") || null,
@@ -349,7 +355,7 @@ export async function addJuryMember(formData: FormData) {
   await supabase.from("jury_members").insert({
     name: formData.get("name"),
     role: formData.get("role"),
-    photo_url: formData.get("photoUrl"),
+    photo_url: photoUrl,
     socials,
     order: Number(formData.get("order") || 0),
   });
@@ -359,6 +365,12 @@ export async function addJuryMember(formData: FormData) {
 
 export async function updateJuryMember(formData: FormData) {
   const supabase = createSupabaseAdminClient();
+  const photoFile = formData.get("photoFile") as File | null;
+  let photoUrl = formData.get("photoUrl") || null;
+  if (photoFile && photoFile.size > 0) {
+    const upload = await uploadAdminFile("site_uploads", photoFile, "jury");
+    photoUrl = upload.url;
+  }
   const socials = {
     instagram: formData.get("instagram") || null,
     tiktok: formData.get("tiktok") || null,
@@ -370,7 +382,7 @@ export async function updateJuryMember(formData: FormData) {
     .update({
       name: formData.get("name"),
       role: formData.get("role"),
-      photo_url: formData.get("photoUrl"),
+      photo_url: photoUrl,
       socials,
       order: Number(formData.get("order") || 0),
     })
@@ -388,9 +400,15 @@ export async function deleteJuryMember(formData: FormData) {
 
 export async function addHotelPhoto(formData: FormData) {
   const supabase = createSupabaseAdminClient();
+  const photoFile = formData.get("photoFile") as File | null;
+  let photoUrl = formData.get("photoUrl") || null;
+  if (photoFile && photoFile.size > 0) {
+    const upload = await uploadAdminFile("site_uploads", photoFile, "hotel");
+    photoUrl = upload.url;
+  }
   await supabase.from("hotel_photos").insert({
     title: formData.get("title"),
-    photo_url: formData.get("photoUrl"),
+    photo_url: photoUrl,
     order: Number(formData.get("order") || 0),
   });
   revalidatePath("/admin");
@@ -399,11 +417,17 @@ export async function addHotelPhoto(formData: FormData) {
 
 export async function updateHotelPhoto(formData: FormData) {
   const supabase = createSupabaseAdminClient();
+  const photoFile = formData.get("photoFile") as File | null;
+  let photoUrl = formData.get("photoUrl") || null;
+  if (photoFile && photoFile.size > 0) {
+    const upload = await uploadAdminFile("site_uploads", photoFile, "hotel");
+    photoUrl = upload.url;
+  }
   await supabase
     .from("hotel_photos")
     .update({
       title: formData.get("title"),
-      photo_url: formData.get("photoUrl"),
+      photo_url: photoUrl,
       order: Number(formData.get("order") || 0),
     })
     .eq("id", Number(formData.get("id")));

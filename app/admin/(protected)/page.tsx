@@ -328,18 +328,29 @@ export default async function AdminPage({
 
             <section className="glass rounded-2xl p-6 mt-10">
               <h2 className="text-xl font-semibold">Otel Fotoğrafları</h2>
-              <form action={addHotelPhoto} className="mt-6 grid gap-3 md:grid-cols-2">
+              <form
+                action={addHotelPhoto}
+                encType="multipart/form-data"
+                className="mt-6 grid gap-3 md:grid-cols-2"
+              >
                 <Input name="title" placeholder="Fotoğraf başlığı (opsiyonel)" />
-                <Input name="photoUrl" placeholder="Fotoğraf URL" />
+                <Input name="photoUrl" placeholder="Fotoğraf URL (opsiyonel)" />
+                <Input name="photoFile" type="file" accept="image/*" />
                 <Input name="order" placeholder="Sıra" type="number" />
                 <Button type="submit">Ekle</Button>
               </form>
               <div className="mt-6 grid gap-4">
                 {hotelPhotos?.map((photo: any) => (
-                  <form key={photo.id} action={updateHotelPhoto} className="grid gap-3 md:grid-cols-2">
+                  <form
+                    key={photo.id}
+                    action={updateHotelPhoto}
+                    encType="multipart/form-data"
+                    className="grid gap-3 md:grid-cols-2"
+                  >
                     <input type="hidden" name="id" value={photo.id} />
                     <Input name="title" defaultValue={photo.title ?? ""} />
                     <Input name="photoUrl" defaultValue={photo.photo_url} />
+                    <Input name="photoFile" type="file" accept="image/*" />
                     <Input name="order" type="number" defaultValue={photo.order ?? 0} />
                     <div className="flex gap-2">
                       <Button type="submit" size="sm">
@@ -390,10 +401,15 @@ export default async function AdminPage({
           <TabsContent value="jury">
             <section className="glass rounded-2xl p-6">
               <h2 className="text-xl font-semibold">Jüri Üyeleri</h2>
-              <form action={addJuryMember} className="mt-6 grid gap-3 md:grid-cols-2">
+              <form
+                action={addJuryMember}
+                encType="multipart/form-data"
+                className="mt-6 grid gap-3 md:grid-cols-2"
+              >
                 <Input name="name" placeholder="Ad Soyad" />
                 <Input name="role" placeholder="Branş / Ünvan" />
-                <Input name="photoUrl" placeholder="Fotoğraf URL" />
+                <Input name="photoUrl" placeholder="Fotoğraf URL (opsiyonel)" />
+                <Input name="photoFile" type="file" accept="image/*" />
                 <Input name="order" placeholder="Sıra" type="number" />
                 <Input name="instagram" placeholder="Instagram" />
                 <Input name="tiktok" placeholder="TikTok" />
@@ -403,11 +419,17 @@ export default async function AdminPage({
               </form>
               <div className="mt-6 grid gap-4">
                 {juryMembers?.map((member: any) => (
-                  <form key={member.id} action={updateJuryMember} className="grid gap-3 md:grid-cols-2">
+                  <form
+                    key={member.id}
+                    action={updateJuryMember}
+                    encType="multipart/form-data"
+                    className="grid gap-3 md:grid-cols-2"
+                  >
                     <input type="hidden" name="id" value={member.id} />
                     <Input name="name" defaultValue={member.name} />
                     <Input name="role" defaultValue={member.role ?? ""} />
                     <Input name="photoUrl" defaultValue={member.photo_url ?? ""} />
+                    <Input name="photoFile" type="file" accept="image/*" />
                     <Input name="order" type="number" defaultValue={member.order ?? 0} />
                     <Input name="instagram" defaultValue={member.socials?.instagram ?? ""} />
                     <Input name="tiktok" defaultValue={member.socials?.tiktok ?? ""} />
