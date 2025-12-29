@@ -53,3 +53,24 @@ export async function getAppContent() {
   }
   return mergeAppContent(data?.content ?? null);
 }
+
+export async function getArticles() {
+  const supabase = createSupabaseServerComponentClient();
+  const { data } = await supabase
+    .from("articles")
+    .select("*")
+    .eq("status", "published")
+    .order("published_at", { ascending: false });
+  return data ?? [];
+}
+
+export async function getArticleBySlug(slug: string) {
+  const supabase = createSupabaseServerComponentClient();
+  const { data } = await supabase
+    .from("articles")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .single();
+  return data;
+}

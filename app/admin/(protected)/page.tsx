@@ -4,6 +4,8 @@ import {
   addSponsorLogo,
   addSponsorPackage,
   addTimelineItem,
+  addArticle,
+  deleteArticle,
   deleteFaqItem,
   deleteSponsorLogo,
   deleteSponsorPackage,
@@ -13,6 +15,7 @@ import {
   upsertLegalPage,
   upsertSiteSettings,
   updateFaqItem,
+  updateArticle,
   updateSponsorPackage,
   updateTimelineItem,
 } from "@/app/actions/admin";
@@ -72,6 +75,7 @@ export default async function AdminPage({
     { data: sponsorLogos },
     { data: legalPages },
     { data: appContentRow },
+    { data: articles },
     { data: contestantApplications },
     { data: sponsorApplications },
   ] = await Promise.all([
@@ -83,6 +87,7 @@ export default async function AdminPage({
     supabase.from("sponsor_logos").select("*").order("order", { ascending: true }),
     supabase.from("legal_pages").select("*"),
     supabase.from("app_content").select("content").single(),
+    supabase.from("articles").select("*").order("created_at", { ascending: false }),
     contestantQuery,
     sponsorQuery,
   ]);
@@ -162,6 +167,18 @@ export default async function AdminPage({
                   <div className="grid gap-2">
                     <Label>YouTube</Label>
                     <Input name="youtube" defaultValue={siteSettings?.socials?.youtube ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>SEO Başlık</Label>
+                    <Input name="seoTitle" defaultValue={siteSettings?.seo_title ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>SEO Açıklama</Label>
+                    <Textarea name="seoDescription" defaultValue={siteSettings?.seo_description ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>SEO Anahtar Kelimeler</Label>
+                    <Input name="seoKeywords" defaultValue={siteSettings?.seo_keywords ?? ""} />
                   </div>
                   <div className="grid gap-2">
                     <Label>Logo URL</Label>
@@ -433,6 +450,60 @@ export default async function AdminPage({
                     </form>
                   );
                 })}
+              </section>
+
+              <section className="glass rounded-2xl p-6">
+                <h2 className="text-xl font-semibold">Makaleler</h2>
+                <form action={addArticle} className="mt-6 grid gap-3 md:grid-cols-2">
+                  <Input name="title" placeholder="Başlık" />
+                  <Input name="slug" placeholder="slug-ornek" />
+                  <Input name="status" placeholder="draft veya published" />
+                  <Input name="publishedAt" type="date" placeholder="Yayın Tarihi" />
+                  <Input name="coverImageUrl" placeholder="Kapak görsel URL" className="md:col-span-2" />
+                  <Textarea name="excerpt" placeholder="Özet" className="md:col-span-2" />
+                  <Textarea name="content" placeholder="Makale içeriği" className="md:col-span-2" />
+                  <Input name="seoTitle" placeholder="SEO Başlık" className="md:col-span-2" />
+                  <Textarea name="seoDescription" placeholder="SEO Açıklama" className="md:col-span-2" />
+                  <Input name="seoKeywords" placeholder="SEO Anahtar Kelimeler" className="md:col-span-2" />
+                  <Button type="submit">Ekle</Button>
+                </form>
+                <div className="mt-6 grid gap-4">
+                  {articles?.map((article: any) => (
+                    <form key={article.id} action={updateArticle} className="grid gap-3 md:grid-cols-2">
+                      <input type="hidden" name="id" value={article.id} />
+                      <Input name="title" defaultValue={article.title} />
+                      <Input name="slug" defaultValue={article.slug} />
+                      <Input name="status" defaultValue={article.status} />
+                      <Input name="publishedAt" type="date" defaultValue={article.published_at ?? ""} />
+                      <Input
+                        name="coverImageUrl"
+                        defaultValue={article.cover_image_url ?? ""}
+                        className="md:col-span-2"
+                      />
+                      <Textarea name="excerpt" defaultValue={article.excerpt ?? ""} className="md:col-span-2" />
+                      <Textarea name="content" defaultValue={article.content ?? ""} className="md:col-span-2" />
+                      <Input name="seoTitle" defaultValue={article.seo_title ?? ""} className="md:col-span-2" />
+                      <Textarea
+                        name="seoDescription"
+                        defaultValue={article.seo_description ?? ""}
+                        className="md:col-span-2"
+                      />
+                      <Input
+                        name="seoKeywords"
+                        defaultValue={article.seo_keywords ?? ""}
+                        className="md:col-span-2"
+                      />
+                      <div className="flex gap-2">
+                        <Button type="submit" size="sm">
+                          Güncelle
+                        </Button>
+                        <Button type="submit" formAction={deleteArticle} variant="outline" size="sm">
+                          Sil
+                        </Button>
+                      </div>
+                    </form>
+                  ))}
+                </div>
               </section>
 
               <section className="glass rounded-2xl p-6">

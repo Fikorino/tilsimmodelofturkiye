@@ -42,6 +42,9 @@ export async function upsertSiteSettings(formData: FormData) {
     contact_phone: formData.get("contactPhone"),
     contact_address: formData.get("contactAddress"),
     logo_url: logoUrl,
+    seo_title: formData.get("seoTitle"),
+    seo_description: formData.get("seoDescription"),
+    seo_keywords: formData.get("seoKeywords"),
     socials,
   });
   revalidatePath("/admin");
@@ -282,4 +285,50 @@ export async function upsertAppContent(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/basvuru/yarismaci");
   revalidatePath("/basvuru/sponsor");
+}
+
+export async function addArticle(formData: FormData) {
+  const supabase = createSupabaseAdminClient();
+  await supabase.from("articles").insert({
+    title: formData.get("title"),
+    slug: formData.get("slug"),
+    excerpt: formData.get("excerpt"),
+    content: formData.get("content"),
+    cover_image_url: formData.get("coverImageUrl"),
+    seo_title: formData.get("seoTitle"),
+    seo_description: formData.get("seoDescription"),
+    seo_keywords: formData.get("seoKeywords"),
+    status: formData.get("status") || "draft",
+    published_at: formData.get("publishedAt") || null,
+  });
+  revalidatePath("/admin");
+  revalidatePath("/makaleler");
+}
+
+export async function updateArticle(formData: FormData) {
+  const supabase = createSupabaseAdminClient();
+  await supabase
+    .from("articles")
+    .update({
+      title: formData.get("title"),
+      slug: formData.get("slug"),
+      excerpt: formData.get("excerpt"),
+      content: formData.get("content"),
+      cover_image_url: formData.get("coverImageUrl"),
+      seo_title: formData.get("seoTitle"),
+      seo_description: formData.get("seoDescription"),
+      seo_keywords: formData.get("seoKeywords"),
+      status: formData.get("status") || "draft",
+      published_at: formData.get("publishedAt") || null,
+    })
+    .eq("id", Number(formData.get("id")));
+  revalidatePath("/admin");
+  revalidatePath("/makaleler");
+}
+
+export async function deleteArticle(formData: FormData) {
+  const supabase = createSupabaseAdminClient();
+  await supabase.from("articles").delete().eq("id", Number(formData.get("id")));
+  revalidatePath("/admin");
+  revalidatePath("/makaleler");
 }

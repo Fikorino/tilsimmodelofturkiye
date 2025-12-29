@@ -8,6 +8,7 @@ const navItems = [
   { label: "Takvim", href: "#takvim" },
   { label: "Jüri", href: "#juri" },
   { label: "Ödüller", href: "#oduller" },
+  { label: "Makaleler", href: "/makaleler" },
   { label: "SSS", href: "#sss" },
   { label: "Sponsorlar", href: "#sponsorlar" },
 ];
@@ -34,11 +35,17 @@ export function SiteHeader({ brandName, logoUrl }: { brandName?: string; logoUrl
           )}
         </Link>
         <nav className="hidden items-center gap-6 text-sm text-muted md:flex">
-          {navItems.map((item) => (
-            <a key={item.href} href={item.href} className="hover:text-fg">
-              {item.label}
-            </a>
-          ))}
+          {navItems.map((item) =>
+            item.href.startsWith("/") ? (
+              <Link key={item.href} href={item.href} className="hover:text-fg">
+                {item.label}
+              </Link>
+            ) : (
+              <a key={item.href} href={item.href} className="hover:text-fg">
+                {item.label}
+              </a>
+            )
+          )}
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />

@@ -10,6 +10,7 @@ Premium, mobil öncelikli yarışma sitesi (Next.js + Supabase).
 
 ### 2) SQL şemasını çalıştır
 Supabase SQL Editor'da `supabase/migrations/001_init.sql` dosyasını çalıştırın.
+Ardından içerik ve SEO alanları için sırasıyla `supabase/migrations/002_content.sql`, `003_home_updates.sql` ve `004_seo_articles.sql` dosyalarını çalıştırın.
 
 ### 3) Storage bucket'ları oluştur
 Supabase Storage → Buckets bölümünde aşağıdaki bucket'ları oluşturun:
@@ -59,6 +60,7 @@ Uygulama `http://localhost:3000` adresinde çalışacaktır.
 - İçerikler, SSS, takvim, sponsor paketleri/logoları ve yasal metinler buradan yönetilir.
 - Başvuru sayfalarının metinleri ve form etiketleri de admin panelinden düzenlenebilir.
 - Site logosu için `site_uploads` bucket'ı kullanılır.
+- SEO başlığı/açıklaması ve makaleler admin panelinden yönetilir.
 
 ## Notlar
 - Başvurular `contestant_applications` ve `sponsor_applications` tablolarına yazılır.
