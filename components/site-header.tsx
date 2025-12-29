@@ -22,8 +22,8 @@ export function SiteHeader({ brandName, logoUrl }: { brandName?: string; logoUrl
               <Image
                 src={logoUrl}
                 alt={brandName ?? "Tılsım Model of Türkiye"}
-                width={40}
-                height={40}
+                width={56}
+                height={56}
                 className="rounded-full object-cover"
                 unoptimized
               />

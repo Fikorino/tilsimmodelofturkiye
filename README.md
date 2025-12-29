@@ -17,6 +17,8 @@ Supabase Storage → Buckets bölümünde aşağıdaki bucket'ları oluşturun:
 - `sponsor_uploads`
 - `site_uploads`
 
+> `site_uploads` bucket'ı logo görseli için kullanılır.
+
 > Not: Logo ve medya içeriklerini göstermek için bucket'ları **public** yapın veya signed URL yaklaşımı kullanın.
 
 ### 4) ENV değişkenlerini ayarla

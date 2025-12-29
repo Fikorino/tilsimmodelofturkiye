@@ -17,6 +17,9 @@ export default async function HomePage() {
           homeSections.hero_subtitle ??
           "Işıltını sahneye taşı. Türkiye'nin en prestijli model yarışmasında yerini al.",
         heroDateCity: homeSections.hero_date_city ?? "09.09.2025 · İstanbul",
+        heroImageUrl:
+          homeSections.hero_image_url ??
+          "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
         aboutTitle: homeSections.about_title ?? "Yarışma Hakkında",
         aboutBody:
           homeSections.about_body ??
@@ -33,25 +36,34 @@ export default async function HomePage() {
         prizesBody:
           homeSections.prizes_body ??
           "Yurt dışı temsil, moda çekimi, marka iş birlikleri ve para ödülleri.",
+        hotelTitle: homeSections.hotel_title ?? "Konaklama & Otel Bilgileri",
+        hotelBody:
+          homeSections.hotel_body ??
+          "Final haftası boyunca anlaşmalı otellerimizde özel konaklama seçenekleri ve transfer desteği sunulur.",
         faqTitle: homeSections.faq_title ?? "Sıkça Sorulan Sorular",
         sponsorsTitle: homeSections.sponsors_title ?? "Sponsorlarımız",
         ctaPrimary: homeSections.cta_primary ?? "Yarışmacı Başvur",
         ctaSecondary: homeSections.cta_secondary ?? "Sponsor Başvur",
       }
     : {
-    heroTitle: "Tılsım Model of Türkiye",
-    heroSubtitle: "Işıltını sahneye taşı. Türkiye'nin en prestijli model yarışmasında yerini al.",
-    heroDateCity: "09.09.2025 · İstanbul",
-    aboutTitle: "Yarışma Hakkında",
+      heroTitle: "Tılsım Model of Türkiye",
+      heroSubtitle: "Işıltını sahneye taşı. Türkiye'nin en prestijli model yarışmasında yerini al.",
+      heroDateCity: "09.09.2025 · İstanbul",
+      heroImageUrl:
+        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+      aboutTitle: "Yarışma Hakkında",
     aboutBody:
       "Tılsım Model of Türkiye; moda, sahne ve kişisel gelişimi bir araya getiren seçkin bir platformdur. Finale kalan yarışmacılar, özel eğitim kampları ve global markalarla buluşma fırsatı elde eder.",
     processTitle: "Süreç & Takvim",
     processBody: "Başvuru, ön eleme, kamp ve final gala adımlarını kapsayan özel bir süreç.",
     juryTitle: "Jüri & Eğitmenler",
     juryBody: "Uluslararası moda profesyonelleri, fotoğrafçılar ve kreatif yönetmenler.",
-    prizesTitle: "Ödüller",
-    prizesBody: "Yurt dışı temsil, moda çekimi, marka iş birlikleri ve para ödülleri.",
-    faqTitle: "Sıkça Sorulan Sorular",
+      prizesTitle: "Ödüller",
+      prizesBody: "Yurt dışı temsil, moda çekimi, marka iş birlikleri ve para ödülleri.",
+      hotelTitle: "Konaklama & Otel Bilgileri",
+      hotelBody:
+        "Final haftası boyunca anlaşmalı otellerimizde özel konaklama seçenekleri ve transfer desteği sunulur.",
+      faqTitle: "Sıkça Sorulan Sorular",
     sponsorsTitle: "Sponsorlarımız",
     ctaPrimary: "Yarışmacı Başvur",
     ctaSecondary: "Sponsor Başvur",
@@ -79,7 +91,7 @@ export default async function HomePage() {
             <MotionReveal delay={0.2}>
               <div className="glass rounded-3xl p-6 shadow-glow">
                 <Image
-                  src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80"
+                  src={hero.heroImageUrl}
                   alt="Model sahnesi"
                   width={520}
                   height={640}
@@ -132,6 +144,13 @@ export default async function HomePage() {
           <MotionReveal>
             <h2 className="section-title">{hero.prizesTitle}</h2>
             <p className="mt-4 text-muted text-lg">{hero.prizesBody}</p>
+          </MotionReveal>
+        </section>
+
+        <section id="otel" className="mx-auto max-w-6xl px-4 py-16 md:px-6">
+          <MotionReveal>
+            <h2 className="section-title">{hero.hotelTitle}</h2>
+            <p className="mt-4 text-muted text-lg">{hero.hotelBody}</p>
           </MotionReveal>
         </section>
 

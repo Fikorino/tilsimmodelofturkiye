@@ -178,24 +178,81 @@ export default async function AdminPage({
               <section className="glass rounded-2xl p-6">
                 <h2 className="text-xl font-semibold">Ana Sayfa İçerikleri</h2>
                 <form action={upsertHomeSections} className="mt-6 grid gap-4">
-                  <Input
-                    name="heroTitle"
-                    defaultValue={homeSections?.hero_title ?? "Tılsım Model of Türkiye"}
-                  />
-                  <Textarea name="heroSubtitle" defaultValue={homeSections?.hero_subtitle ?? ""} />
-                  <Input name="heroDateCity" defaultValue={homeSections?.hero_date_city ?? ""} />
-                  <Input name="aboutTitle" defaultValue={homeSections?.about_title ?? ""} />
-                  <Textarea name="aboutBody" defaultValue={homeSections?.about_body ?? ""} />
-                  <Input name="processTitle" defaultValue={homeSections?.process_title ?? ""} />
-                  <Textarea name="processBody" defaultValue={homeSections?.process_body ?? ""} />
-                  <Input name="juryTitle" defaultValue={homeSections?.jury_title ?? ""} />
-                  <Textarea name="juryBody" defaultValue={homeSections?.jury_body ?? ""} />
-                  <Input name="prizesTitle" defaultValue={homeSections?.prizes_title ?? ""} />
-                  <Textarea name="prizesBody" defaultValue={homeSections?.prizes_body ?? ""} />
-                  <Input name="faqTitle" defaultValue={homeSections?.faq_title ?? ""} />
-                  <Input name="sponsorsTitle" defaultValue={homeSections?.sponsors_title ?? ""} />
-                  <Input name="ctaPrimary" defaultValue={homeSections?.cta_primary ?? ""} />
-                  <Input name="ctaSecondary" defaultValue={homeSections?.cta_secondary ?? ""} />
+                  <div className="grid gap-2">
+                    <Label>Hero Başlık</Label>
+                    <Input
+                      name="heroTitle"
+                      defaultValue={homeSections?.hero_title ?? "Tılsım Model of Türkiye"}
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Hero Açıklama</Label>
+                    <Textarea name="heroSubtitle" defaultValue={homeSections?.hero_subtitle ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Hero Tarih/Şehir</Label>
+                    <Input name="heroDateCity" defaultValue={homeSections?.hero_date_city ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Hero Fotoğraf URL</Label>
+                    <Input name="heroImageUrl" defaultValue={homeSections?.hero_image_url ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Hakkında Başlığı</Label>
+                    <Input name="aboutTitle" defaultValue={homeSections?.about_title ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Hakkında Metni</Label>
+                    <Textarea name="aboutBody" defaultValue={homeSections?.about_body ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Süreç Başlığı</Label>
+                    <Input name="processTitle" defaultValue={homeSections?.process_title ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Süreç Açıklaması</Label>
+                    <Textarea name="processBody" defaultValue={homeSections?.process_body ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Jüri Başlığı</Label>
+                    <Input name="juryTitle" defaultValue={homeSections?.jury_title ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Jüri Açıklaması</Label>
+                    <Textarea name="juryBody" defaultValue={homeSections?.jury_body ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Ödüller Başlığı</Label>
+                    <Input name="prizesTitle" defaultValue={homeSections?.prizes_title ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Ödüller Açıklaması</Label>
+                    <Textarea name="prizesBody" defaultValue={homeSections?.prizes_body ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Otel Bilgileri Başlığı</Label>
+                    <Input name="hotelTitle" defaultValue={homeSections?.hotel_title ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Otel Bilgileri Açıklaması</Label>
+                    <Textarea name="hotelBody" defaultValue={homeSections?.hotel_body ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>SSS Başlığı</Label>
+                    <Input name="faqTitle" defaultValue={homeSections?.faq_title ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Sponsorlar Başlığı</Label>
+                    <Input name="sponsorsTitle" defaultValue={homeSections?.sponsors_title ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Ana CTA (Yarışmacı)</Label>
+                    <Input name="ctaPrimary" defaultValue={homeSections?.cta_primary ?? ""} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>İkincil CTA (Sponsor)</Label>
+                    <Input name="ctaSecondary" defaultValue={homeSections?.cta_secondary ?? ""} />
+                  </div>
                   <Button type="submit">Kaydet</Button>
                 </form>
               </section>

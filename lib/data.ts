@@ -47,6 +47,9 @@ export async function getSiteSettings() {
 
 export async function getAppContent() {
   const supabase = createSupabaseServerComponentClient();
-  const { data } = await supabase.from("app_content").select("content").single();
+  const { data, error } = await supabase.from("app_content").select("content").single();
+  if (error) {
+    return mergeAppContent(null);
+  }
   return mergeAppContent(data?.content ?? null);
 }
