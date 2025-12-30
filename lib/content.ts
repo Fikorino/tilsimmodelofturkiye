@@ -8,6 +8,8 @@ export type AppContent = {
     submitLabel: string;
     termsCheckboxLabel: string;
     under18Note: string;
+    requiredFields: string[];
+    customFields: { label: string; required: boolean }[];
   };
   sponsor: {
     pageTitle: string;
@@ -40,6 +42,19 @@ export const defaultAppContent: AppContent = {
     submitLabel: "Başvuruyu Gönder",
     termsCheckboxLabel: "Şartları okudum ve kabul ediyorum.",
     under18Note: "18 yaş altı için onay belgesi zorunludur.",
+    requiredFields: [
+      "adSoyad",
+      "dogumTarihi",
+      "boyCm",
+      "sehir",
+      "telefon",
+      "eposta",
+      "instagramUrl",
+      "kendiniTanit",
+      "vesikalikFoto",
+      "tamBoyFoto",
+    ],
+    customFields: [],
   },
   sponsor: {
     pageTitle: "Sponsor Başvuru",
@@ -109,7 +124,12 @@ export const defaultAppContent: AppContent = {
 export function mergeAppContent(content?: Partial<AppContent> | null): AppContent {
   if (!content) return defaultAppContent;
   return {
-    contestant: { ...defaultAppContent.contestant, ...content.contestant },
+    contestant: {
+      ...defaultAppContent.contestant,
+      ...content.contestant,
+      requiredFields: content.contestant?.requiredFields ?? defaultAppContent.contestant.requiredFields,
+      customFields: content.contestant?.customFields ?? defaultAppContent.contestant.customFields,
+    },
     sponsor: { ...defaultAppContent.sponsor, ...content.sponsor },
     labels: {
       contestant: { ...defaultAppContent.labels.contestant, ...content.labels?.contestant },

@@ -8,6 +8,7 @@ const navItems = [
   { label: "Takvim", href: "#takvim" },
   { label: "Jüri", href: "#juri" },
   { label: "Ödüller", href: "#oduller" },
+  { label: "Medya", href: "#medya" },
   { label: "Makaleler", href: "/makaleler" },
   { label: "SSS", href: "#sss" },
   { label: "Sponsorlar", href: "#sponsorlar" },

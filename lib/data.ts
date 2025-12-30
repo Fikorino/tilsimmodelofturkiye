@@ -86,3 +86,9 @@ export async function getHotelPhotos() {
   const { data } = await supabase.from("hotel_photos").select("*").order("order", { ascending: true });
   return data ?? [];
 }
+
+export async function getMediaItems() {
+  const supabase = createSupabaseServerComponentClient();
+  const { data } = await supabase.from("media_items").select("*").order("order", { ascending: true });
+  return data ?? [];
+}

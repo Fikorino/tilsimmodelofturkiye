@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getHotelPhotos, getJuryMembers, getPublicContent } from "@/lib/data";
+import { getHotelPhotos, getJuryMembers, getMediaItems, getPublicContent } from "@/lib/data";
 import { MotionReveal } from "@/components/motion-reveal";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -9,7 +9,11 @@ import { Card } from "@/components/ui/card";
 
 export default async function HomePage() {
   const { siteSettings, homeSections, timelineItems, faqItems, sponsorLogos } = await getPublicContent();
-  const [juryMembers, hotelPhotos] = await Promise.all([getJuryMembers(), getHotelPhotos()]);
+  const [juryMembers, hotelPhotos, mediaItems] = await Promise.all([
+    getJuryMembers(),
+    getHotelPhotos(),
+    getMediaItems(),
+  ]);
 
   const hero = homeSections
     ? {
@@ -25,18 +29,22 @@ export default async function HomePage() {
         aboutBody:
           homeSections.about_body ??
           "Tılsım Model of Türkiye; moda, sahne ve kişisel gelişimi bir araya getiren seçkin bir platformdur. Finale kalan yarışmacılar, özel eğitim kampları ve global markalarla buluşma fırsatı elde eder.",
+        aboutImageUrl: homeSections.about_image_url ?? "",
         processTitle: homeSections.process_title ?? "Süreç & Takvim",
         processBody:
           homeSections.process_body ??
           "Başvuru, ön eleme, kamp ve final gala adımlarını kapsayan özel bir süreç.",
+        processImageUrl: homeSections.process_image_url ?? "",
         juryTitle: homeSections.jury_title ?? "Jüri & Eğitmenler",
         juryBody:
           homeSections.jury_body ??
           "Uluslararası moda profesyonelleri, fotoğrafçılar ve kreatif yönetmenler.",
+        juryImageUrl: homeSections.jury_image_url ?? "",
         prizesTitle: homeSections.prizes_title ?? "Ödüller",
         prizesBody:
           homeSections.prizes_body ??
           "Yurt dışı temsil, moda çekimi, marka iş birlikleri ve para ödülleri.",
+        prizesImageUrl: homeSections.prizes_image_url ?? "",
         hotelTitle: homeSections.hotel_title ?? "Konaklama & Otel Bilgileri",
         hotelBody:
           homeSections.hotel_body ??
@@ -56,14 +64,18 @@ export default async function HomePage() {
       heroImageUrl:
         "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
       aboutTitle: "Yarışma Hakkında",
-    aboutBody:
-      "Tılsım Model of Türkiye; moda, sahne ve kişisel gelişimi bir araya getiren seçkin bir platformdur. Finale kalan yarışmacılar, özel eğitim kampları ve global markalarla buluşma fırsatı elde eder.",
-    processTitle: "Süreç & Takvim",
-    processBody: "Başvuru, ön eleme, kamp ve final gala adımlarını kapsayan özel bir süreç.",
-    juryTitle: "Jüri & Eğitmenler",
-    juryBody: "Uluslararası moda profesyonelleri, fotoğrafçılar ve kreatif yönetmenler.",
+      aboutBody:
+        "Tılsım Model of Türkiye; moda, sahne ve kişisel gelişimi bir araya getiren seçkin bir platformdur. Finale kalan yarışmacılar, özel eğitim kampları ve global markalarla buluşma fırsatı elde eder.",
+      aboutImageUrl: "",
+      processTitle: "Süreç & Takvim",
+      processBody: "Başvuru, ön eleme, kamp ve final gala adımlarını kapsayan özel bir süreç.",
+      processImageUrl: "",
+      juryTitle: "Jüri & Eğitmenler",
+      juryBody: "Uluslararası moda profesyonelleri, fotoğrafçılar ve kreatif yönetmenler.",
+      juryImageUrl: "",
       prizesTitle: "Ödüller",
       prizesBody: "Yurt dışı temsil, moda çekimi, marka iş birlikleri ve para ödülleri.",
+      prizesImageUrl: "",
       hotelTitle: "Konaklama & Otel Bilgileri",
       hotelBody:
         "Final haftası boyunca anlaşmalı otellerimizde özel konaklama seçenekleri ve transfer desteği sunulur.",
@@ -117,16 +129,42 @@ export default async function HomePage() {
 
         <section id="hakkinda" className="mx-auto max-w-6xl px-4 py-16 md:px-6">
           <MotionReveal>
-            <h2 className="section-title">{hero.aboutTitle}</h2>
-            <p className="mt-4 text-muted text-lg">{hero.aboutBody}</p>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <h2 className="section-title">{hero.aboutTitle}</h2>
+                <p className="mt-4 text-muted text-lg">{hero.aboutBody}</p>
+              </div>
+              {hero.aboutImageUrl && (
+                <Image
+                  src={hero.aboutImageUrl}
+                  alt={hero.aboutTitle}
+                  width={520}
+                  height={360}
+                  className="h-64 w-full rounded-2xl object-cover"
+                  unoptimized
+                />
+              )}
+            </div>
           </MotionReveal>
         </section>
 
         <section id="takvim" className="mx-auto max-w-6xl px-4 py-16 md:px-6">
           <MotionReveal>
-            <div className="flex items-center justify-between">
-              <h2 className="section-title">{hero.processTitle}</h2>
-              <span className="text-sm text-muted">{hero.processBody}</span>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <h2 className="section-title">{hero.processTitle}</h2>
+                <p className="mt-4 text-muted text-lg">{hero.processBody}</p>
+              </div>
+              {hero.processImageUrl && (
+                <Image
+                  src={hero.processImageUrl}
+                  alt={hero.processTitle}
+                  width={520}
+                  height={360}
+                  className="h-64 w-full rounded-2xl object-cover"
+                  unoptimized
+                />
+              )}
             </div>
           </MotionReveal>
           <div className="mt-8 grid gap-4 md:grid-cols-2">
@@ -150,6 +188,18 @@ export default async function HomePage() {
             <h2 className="section-title">{hero.juryTitle}</h2>
             <p className="mt-4 text-muted text-lg">{hero.juryBody}</p>
           </MotionReveal>
+          {hero.juryImageUrl && (
+            <div className="mt-6">
+              <Image
+                src={hero.juryImageUrl}
+                alt={hero.juryTitle}
+                width={960}
+                height={360}
+                className="h-64 w-full rounded-2xl object-cover"
+                unoptimized
+              />
+            </div>
+          )}
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {(juryMembers.length
               ? juryMembers
@@ -193,6 +243,18 @@ export default async function HomePage() {
             <h2 className="section-title">{hero.prizesTitle}</h2>
             <p className="mt-4 text-muted text-lg">{hero.prizesBody}</p>
           </MotionReveal>
+          {hero.prizesImageUrl && (
+            <div className="mt-6">
+              <Image
+                src={hero.prizesImageUrl}
+                alt={hero.prizesTitle}
+                width={960}
+                height={360}
+                className="h-64 w-full rounded-2xl object-cover"
+                unoptimized
+              />
+            </div>
+          )}
         </section>
 
         <section id="otel" className="mx-auto max-w-6xl px-4 py-16 md:px-6">
@@ -288,6 +350,44 @@ export default async function HomePage() {
                 {logo.name}
               </a>
             ))}
+          </div>
+        </section>
+
+        <section id="medya" className="mx-auto max-w-6xl px-4 py-16 md:px-6">
+          <MotionReveal>
+            <h2 className="section-title">Medya</h2>
+            <p className="mt-4 text-muted text-lg">
+              Yarışmadan özel kareler, sahne arkası ve basın içerikleri.
+            </p>
+          </MotionReveal>
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            {mediaItems.length === 0 && (
+              <div className="text-sm text-muted">Henüz medya içeriği eklenmedi.</div>
+            )}
+            {mediaItems.map((item: any) => {
+              const isVideo = /\.(mp4|webm|ogg)$/i.test(item.media_url || "");
+              return (
+                <div key={item.id} className="glass rounded-2xl p-4">
+                  {isVideo ? (
+                    <video
+                      src={item.media_url}
+                      controls
+                      className="h-40 w-full rounded-xl object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={item.media_url}
+                      alt={item.title ?? "Medya görseli"}
+                      width={420}
+                      height={280}
+                      className="h-40 w-full rounded-xl object-cover"
+                      unoptimized
+                    />
+                  )}
+                  {item.title && <p className="mt-3 text-sm text-muted">{item.title}</p>}
+                </div>
+              );
+            })}
           </div>
         </section>
       </main>

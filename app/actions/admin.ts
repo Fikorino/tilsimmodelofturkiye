@@ -54,23 +54,63 @@ export async function upsertSiteSettings(formData: FormData) {
 
 export async function upsertHomeSections(formData: FormData) {
   const supabase = createSupabaseAdminClient();
+  const heroImageFile = formData.get("heroImageFile") as File | null;
+  let heroImageUrl = formData.get("heroImageUrl") || null;
+  if (heroImageFile && heroImageFile.size > 0) {
+    const upload = await uploadAdminFile("site_uploads", heroImageFile, "home");
+    heroImageUrl = upload.url;
+  }
+  const aboutImageFile = formData.get("aboutImageFile") as File | null;
+  let aboutImageUrl = formData.get("aboutImageUrl") || null;
+  if (aboutImageFile && aboutImageFile.size > 0) {
+    const upload = await uploadAdminFile("site_uploads", aboutImageFile, "home");
+    aboutImageUrl = upload.url;
+  }
+  const processImageFile = formData.get("processImageFile") as File | null;
+  let processImageUrl = formData.get("processImageUrl") || null;
+  if (processImageFile && processImageFile.size > 0) {
+    const upload = await uploadAdminFile("site_uploads", processImageFile, "home");
+    processImageUrl = upload.url;
+  }
+  const juryImageFile = formData.get("juryImageFile") as File | null;
+  let juryImageUrl = formData.get("juryImageUrl") || null;
+  if (juryImageFile && juryImageFile.size > 0) {
+    const upload = await uploadAdminFile("site_uploads", juryImageFile, "home");
+    juryImageUrl = upload.url;
+  }
+  const prizesImageFile = formData.get("prizesImageFile") as File | null;
+  let prizesImageUrl = formData.get("prizesImageUrl") || null;
+  if (prizesImageFile && prizesImageFile.size > 0) {
+    const upload = await uploadAdminFile("site_uploads", prizesImageFile, "home");
+    prizesImageUrl = upload.url;
+  }
+  const hotelImageFile = formData.get("hotelImageFile") as File | null;
+  let hotelImageUrl = formData.get("hotelImageUrl") || null;
+  if (hotelImageFile && hotelImageFile.size > 0) {
+    const upload = await uploadAdminFile("site_uploads", hotelImageFile, "home");
+    hotelImageUrl = upload.url;
+  }
   await supabase.from("home_sections").upsert({
     id: 1,
     hero_title: formData.get("heroTitle"),
     hero_subtitle: formData.get("heroSubtitle"),
     hero_date_city: formData.get("heroDateCity"),
-    hero_image_url: formData.get("heroImageUrl"),
+    hero_image_url: heroImageUrl,
     about_title: formData.get("aboutTitle"),
     about_body: formData.get("aboutBody"),
+    about_image_url: aboutImageUrl,
     process_title: formData.get("processTitle"),
     process_body: formData.get("processBody"),
+    process_image_url: processImageUrl,
     jury_title: formData.get("juryTitle"),
     jury_body: formData.get("juryBody"),
+    jury_image_url: juryImageUrl,
     prizes_title: formData.get("prizesTitle"),
     prizes_body: formData.get("prizesBody"),
+    prizes_image_url: prizesImageUrl,
     hotel_title: formData.get("hotelTitle"),
     hotel_body: formData.get("hotelBody"),
-    hotel_image_url: formData.get("hotelImageUrl"),
+    hotel_image_url: hotelImageUrl,
     hotel_address: formData.get("hotelAddress"),
     hotel_map_url: formData.get("hotelMapUrl"),
     faq_title: formData.get("faqTitle"),
@@ -211,6 +251,20 @@ export async function deleteSponsorLogo(formData: FormData) {
 
 export async function upsertAppContent(formData: FormData) {
   const supabase = createSupabaseAdminClient();
+  const requiredFields = formData.getAll("contestantRequiredFields").map(String).filter(Boolean);
+  const customFieldsRaw = String(formData.get("contestantCustomFields") || "");
+  const customFields = customFieldsRaw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [label, requiredText] = line.split("|");
+      return {
+        label: label?.trim() ?? "",
+        required: (requiredText ?? "").trim().toLowerCase() === "zorunlu",
+      };
+    })
+    .filter((item) => item.label.length > 0);
   const content = {
     contestant: {
       pageTitle: formData.get("contestantPageTitle"),
@@ -221,6 +275,8 @@ export async function upsertAppContent(formData: FormData) {
       submitLabel: formData.get("contestantSubmitLabel"),
       termsCheckboxLabel: formData.get("contestantTermsCheckboxLabel"),
       under18Note: formData.get("contestantUnder18Note"),
+      requiredFields,
+      customFields,
     },
     sponsor: {
       pageTitle: formData.get("sponsorPageTitle"),
@@ -438,6 +494,52 @@ export async function updateHotelPhoto(formData: FormData) {
 export async function deleteHotelPhoto(formData: FormData) {
   const supabase = createSupabaseAdminClient();
   await supabase.from("hotel_photos").delete().eq("id", Number(formData.get("id")));
+  revalidatePath("/admin");
+  revalidatePath("/");
+}
+
+export async function addMediaItem(formData: FormData) {
+  const supabase = createSupabaseAdminClient();
+  const mediaFile = formData.get("mediaFile") as File | null;
+  let mediaUrl = formData.get("mediaUrl") || null;
+  if (mediaFile && mediaFile.size > 0) {
+    const upload = await uploadAdminFile("site_uploads", mediaFile, "media");
+    mediaUrl = upload.url;
+  }
+  await supabase.from("media_items").insert({
+    title: formData.get("title"),
+    media_url: mediaUrl,
+    category: formData.get("category") || "genel",
+    order: Number(formData.get("order") || 0),
+  });
+  revalidatePath("/admin");
+  revalidatePath("/");
+}
+
+export async function updateMediaItem(formData: FormData) {
+  const supabase = createSupabaseAdminClient();
+  const mediaFile = formData.get("mediaFile") as File | null;
+  let mediaUrl = formData.get("mediaUrl") || null;
+  if (mediaFile && mediaFile.size > 0) {
+    const upload = await uploadAdminFile("site_uploads", mediaFile, "media");
+    mediaUrl = upload.url;
+  }
+  await supabase
+    .from("media_items")
+    .update({
+      title: formData.get("title"),
+      media_url: mediaUrl,
+      category: formData.get("category") || "genel",
+      order: Number(formData.get("order") || 0),
+    })
+    .eq("id", Number(formData.get("id")));
+  revalidatePath("/admin");
+  revalidatePath("/");
+}
+
+export async function deleteMediaItem(formData: FormData) {
+  const supabase = createSupabaseAdminClient();
+  await supabase.from("media_items").delete().eq("id", Number(formData.get("id")));
   revalidatePath("/admin");
   revalidatePath("/");
 }

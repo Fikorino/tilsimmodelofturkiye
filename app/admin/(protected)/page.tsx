@@ -3,6 +3,7 @@ import {
   addArticle,
   addFaqItem,
   addHotelPhoto,
+  addMediaItem,
   addJuryMember,
   addSponsorLogo,
   addSponsorPackage,
@@ -10,6 +11,7 @@ import {
   deleteArticle,
   deleteFaqItem,
   deleteHotelPhoto,
+  deleteMediaItem,
   deleteJuryMember,
   deleteSponsorLogo,
   deleteSponsorPackage,
@@ -21,6 +23,7 @@ import {
   updateArticle,
   updateFaqItem,
   updateHotelPhoto,
+  updateMediaItem,
   updateJuryMember,
   updateSponsorPackage,
   updateTimelineItem,
@@ -42,6 +45,7 @@ export default async function AdminPage({
     date?: string;
     sponsorQuery?: string;
     sponsorDate?: string;
+    tab?: string;
   };
 }) {
   const supabase = createSupabaseServerComponentClient();
@@ -84,6 +88,7 @@ export default async function AdminPage({
     { data: articles },
     { data: juryMembers },
     { data: hotelPhotos },
+    { data: mediaItems },
     { data: contestantApplications },
     { data: sponsorApplications },
   ] = await Promise.all([
@@ -98,6 +103,7 @@ export default async function AdminPage({
     supabase.from("articles").select("*").order("created_at", { ascending: false }),
     supabase.from("jury_members").select("*").order("order", { ascending: true }),
     supabase.from("hotel_photos").select("*").order("order", { ascending: true }),
+    supabase.from("media_items").select("*").order("order", { ascending: true }),
     contestantQuery,
     sponsorQuery,
   ]);
@@ -116,7 +122,7 @@ export default async function AdminPage({
           </form>
         </div>
 
-        <Tabs defaultValue="site" className="mt-8">
+        <Tabs defaultValue={searchParams.tab ?? "site"} className="mt-8">
           <TabsList className="flex flex-wrap">
             <TabsTrigger value="site">Site Ayarları</TabsTrigger>
             <TabsTrigger value="home">Ana Sayfa</TabsTrigger>
@@ -124,6 +130,7 @@ export default async function AdminPage({
             <TabsTrigger value="jury">Jüri</TabsTrigger>
             <TabsTrigger value="faq">SSS</TabsTrigger>
             <TabsTrigger value="hotel">Otel</TabsTrigger>
+            <TabsTrigger value="media">Medya</TabsTrigger>
             <TabsTrigger value="sponsors">Sponsorlar</TabsTrigger>
             <TabsTrigger value="legal">Yasal</TabsTrigger>
             <TabsTrigger value="articles">Makaleler</TabsTrigger>
@@ -221,7 +228,7 @@ export default async function AdminPage({
           <TabsContent value="home">
             <section className="glass rounded-2xl p-6">
               <h2 className="text-xl font-semibold">Ana Sayfa İçerikleri</h2>
-              <form action={upsertHomeSections} className="mt-6 grid gap-4">
+              <form action={upsertHomeSections} encType="multipart/form-data" className="mt-6 grid gap-4">
                 <div className="grid gap-2">
                   <Label>Hero Başlık</Label>
                   <Input
@@ -242,12 +249,24 @@ export default async function AdminPage({
                   <Input name="heroImageUrl" defaultValue={homeSections?.hero_image_url ?? ""} />
                 </div>
                 <div className="grid gap-2">
+                  <Label>Hero Fotoğraf Yükle</Label>
+                  <Input name="heroImageFile" type="file" accept="image/*" />
+                </div>
+                <div className="grid gap-2">
                   <Label>Hakkında Başlığı</Label>
                   <Input name="aboutTitle" defaultValue={homeSections?.about_title ?? ""} />
                 </div>
                 <div className="grid gap-2">
                   <Label>Hakkında Metni</Label>
                   <Textarea name="aboutBody" defaultValue={homeSections?.about_body ?? ""} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Hakkında Fotoğraf URL</Label>
+                  <Input name="aboutImageUrl" defaultValue={homeSections?.about_image_url ?? ""} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Hakkında Fotoğraf Yükle</Label>
+                  <Input name="aboutImageFile" type="file" accept="image/*" />
                 </div>
                 <div className="grid gap-2">
                   <Label>Süreç Başlığı</Label>
@@ -258,6 +277,14 @@ export default async function AdminPage({
                   <Textarea name="processBody" defaultValue={homeSections?.process_body ?? ""} />
                 </div>
                 <div className="grid gap-2">
+                  <Label>Süreç Fotoğraf URL</Label>
+                  <Input name="processImageUrl" defaultValue={homeSections?.process_image_url ?? ""} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Süreç Fotoğraf Yükle</Label>
+                  <Input name="processImageFile" type="file" accept="image/*" />
+                </div>
+                <div className="grid gap-2">
                   <Label>Jüri Başlığı</Label>
                   <Input name="juryTitle" defaultValue={homeSections?.jury_title ?? ""} />
                 </div>
@@ -266,12 +293,28 @@ export default async function AdminPage({
                   <Textarea name="juryBody" defaultValue={homeSections?.jury_body ?? ""} />
                 </div>
                 <div className="grid gap-2">
+                  <Label>Jüri Fotoğraf URL</Label>
+                  <Input name="juryImageUrl" defaultValue={homeSections?.jury_image_url ?? ""} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Jüri Fotoğraf Yükle</Label>
+                  <Input name="juryImageFile" type="file" accept="image/*" />
+                </div>
+                <div className="grid gap-2">
                   <Label>Ödüller Başlığı</Label>
                   <Input name="prizesTitle" defaultValue={homeSections?.prizes_title ?? ""} />
                 </div>
                 <div className="grid gap-2">
                   <Label>Ödüller Açıklaması</Label>
                   <Textarea name="prizesBody" defaultValue={homeSections?.prizes_body ?? ""} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Ödüller Fotoğraf URL</Label>
+                  <Input name="prizesImageUrl" defaultValue={homeSections?.prizes_image_url ?? ""} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Ödüller Fotoğraf Yükle</Label>
+                  <Input name="prizesImageFile" type="file" accept="image/*" />
                 </div>
                 <div className="grid gap-2">
                   <Label>SSS Başlığı</Label>
@@ -299,7 +342,7 @@ export default async function AdminPage({
           <TabsContent value="hotel">
             <section className="glass rounded-2xl p-6">
               <h2 className="text-xl font-semibold">Otel Bilgileri</h2>
-              <form action={upsertHomeSections} className="mt-6 grid gap-4">
+              <form action={upsertHomeSections} encType="multipart/form-data" className="mt-6 grid gap-4">
                 <div className="grid gap-2">
                   <Label>Otel Bilgileri Başlığı</Label>
                   <Input name="hotelTitle" defaultValue={homeSections?.hotel_title ?? ""} />
@@ -311,6 +354,10 @@ export default async function AdminPage({
                 <div className="grid gap-2">
                   <Label>Otel Görsel URL</Label>
                   <Input name="hotelImageUrl" defaultValue={homeSections?.hotel_image_url ?? ""} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Otel Görsel Yükle</Label>
+                  <Input name="hotelImageFile" type="file" accept="image/*" />
                 </div>
                 <div className="grid gap-2">
                   <Label>Otel Adres</Label>
@@ -473,6 +520,49 @@ export default async function AdminPage({
                       </Button>
                     </div>
                     <Textarea name="answer" defaultValue={item.answer} className="md:col-span-3" />
+                  </form>
+                ))}
+              </div>
+            </section>
+          </TabsContent>
+
+          <TabsContent value="media">
+            <section className="glass rounded-2xl p-6">
+              <h2 className="text-xl font-semibold">Medya</h2>
+              <form
+                action={addMediaItem}
+                encType="multipart/form-data"
+                className="mt-6 grid gap-3 md:grid-cols-2"
+              >
+                <Input name="title" placeholder="Başlık" />
+                <Input name="category" placeholder="Kategori" />
+                <Input name="mediaUrl" placeholder="Medya URL (opsiyonel)" />
+                <Input name="mediaFile" type="file" accept="image/*,video/*" />
+                <Input name="order" placeholder="Sıra" type="number" />
+                <Button type="submit">Ekle</Button>
+              </form>
+              <div className="mt-6 grid gap-4">
+                {mediaItems?.map((item: any) => (
+                  <form
+                    key={item.id}
+                    action={updateMediaItem}
+                    encType="multipart/form-data"
+                    className="grid gap-3 md:grid-cols-2"
+                  >
+                    <input type="hidden" name="id" value={item.id} />
+                    <Input name="title" defaultValue={item.title ?? ""} />
+                    <Input name="category" defaultValue={item.category ?? ""} />
+                    <Input name="mediaUrl" defaultValue={item.media_url} />
+                    <Input name="mediaFile" type="file" accept="image/*,video/*" />
+                    <Input name="order" type="number" defaultValue={item.order ?? 0} />
+                    <div className="flex gap-2">
+                      <Button type="submit" size="sm">
+                        Güncelle
+                      </Button>
+                      <Button type="submit" formAction={deleteMediaItem} variant="outline" size="sm">
+                        Sil
+                      </Button>
+                    </div>
                   </form>
                 ))}
               </div>
@@ -720,6 +810,45 @@ export default async function AdminPage({
                 </div>
 
                 <div className="grid gap-4">
+                  <h3 className="text-lg font-semibold">Zorunlu Alanlar</h3>
+                  <div className="grid gap-2 md:grid-cols-2 text-sm">
+                    {[
+                      { key: "adSoyad", label: "Ad Soyad" },
+                      { key: "dogumTarihi", label: "Doğum Tarihi" },
+                      { key: "boyCm", label: "Boy" },
+                      { key: "sehir", label: "Şehir" },
+                      { key: "telefon", label: "Telefon" },
+                      { key: "eposta", label: "E-posta" },
+                      { key: "instagramUrl", label: "Instagram" },
+                      { key: "kendiniTanit", label: "Kendini Tanıt" },
+                      { key: "vesikalikFoto", label: "Vesikalık Foto" },
+                      { key: "tamBoyFoto", label: "Tam Boy Foto" },
+                    ].map((field) => (
+                      <label key={field.key} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          name="contestantRequiredFields"
+                          value={field.key}
+                          defaultChecked={appContent.contestant.requiredFields?.includes(field.key)}
+                        />
+                        {field.label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Ek Soru Alanları</Label>
+                  <Textarea
+                    name="contestantCustomFields"
+                    defaultValue={(appContent.contestant.customFields || [])
+                      .map((field: any) => `${field.label}|${field.required ? "zorunlu" : "opsiyonel"}`)
+                      .join("\n")}
+                    placeholder="Örn: Portfolyo linki|zorunlu"
+                  />
+                  <p className="text-xs text-muted">Her satıra: Soru|zorunlu veya opsiyonel</p>
+                </div>
+
+                <div className="grid gap-4">
                   <h3 className="text-lg font-semibold">Yarışmacı Form Etiketleri</h3>
                   <div className="grid gap-3 md:grid-cols-2">
                     <Input name="labelContestantAdSoyad" defaultValue={appContent.labels?.contestant?.adSoyad} />
@@ -874,6 +1003,7 @@ export default async function AdminPage({
             <section className="glass rounded-2xl p-6">
               <h2 className="text-xl font-semibold">Yarışmacı Başvuruları</h2>
               <form className="mt-4 grid gap-3 md:grid-cols-4" method="get">
+                <input type="hidden" name="tab" value="applications" />
                 <Input name="query" placeholder="Ad Soyad" defaultValue={searchParams.query ?? ""} />
                 <Input name="city" placeholder="Şehir" defaultValue={searchParams.city ?? ""} />
                 <Input name="date" type="date" defaultValue={searchParams.date ?? ""} />
@@ -934,6 +1064,7 @@ export default async function AdminPage({
             <section className="glass rounded-2xl p-6 mt-10">
               <h2 className="text-xl font-semibold">Sponsor Başvuruları</h2>
               <form className="mt-4 grid gap-3 md:grid-cols-3" method="get">
+                <input type="hidden" name="tab" value="applications" />
                 <Input name="sponsorQuery" placeholder="Firma adı" defaultValue={searchParams.sponsorQuery ?? ""} />
                 <Input name="sponsorDate" type="date" defaultValue={searchParams.sponsorDate ?? ""} />
                 <Button type="submit">Filtrele</Button>

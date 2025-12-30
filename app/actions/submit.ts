@@ -3,20 +3,22 @@
 import { headers } from "next/headers";
 import { z } from "zod";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
+import { mergeAppContent } from "@/lib/content";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { formatReference } from "@/lib/format";
 
 
 const contestantSchema = z.object({
-  adSoyad: z.string().min(3, "Ad soyad zorunludur."),
-  dogumTarihi: z.string().min(1, "Doğum tarihi zorunludur."),
-  boyCm: z.string().min(2, "Boy bilgisi zorunludur."),
-  sehir: z.string().min(2, "Şehir zorunludur."),
-  telefon: z.string().min(10, "Telefon zorunludur."),
-  eposta: z.string().email("Geçerli bir e-posta giriniz."),
-  instagramUrl: z.string().url("Geçerli bir Instagram URL giriniz."),
+  adSoyad: z.string().optional().or(z.literal("")),
+  dogumTarihi: z.string().optional().or(z.literal("")),
+  boyCm: z.string().optional().or(z.literal("")),
+  sehir: z.string().optional().or(z.literal("")),
+  telefon: z.string().optional().or(z.literal("")),
+  eposta: z.string().email("Geçerli bir e-posta giriniz.").optional().or(z.literal("")),
+  instagramUrl: z.string().url("Geçerli bir Instagram URL giriniz.").optional().or(z.literal("")),
   tiktokUrl: z.string().optional().or(z.literal("")),
-  kendiniTanit: z.string().min(10, "Kendini tanıt alanı zorunludur."),
+  kendiniTanit: z.string().optional().or(z.literal("")),
   sartlarOnay: z.literal("onay"),
 });
 
@@ -82,14 +84,52 @@ export async function submitContestant(formData: FormData) {
     return { ok: false, message: parsed.error.issues[0]?.message ?? "Form hatası." };
   }
 
+  const supabaseContent = createSupabaseServerComponentClient();
+  const { data: appContentRow } = await supabaseContent.from("app_content").select("content").single();
+  const mergedContent = mergeAppContent(appContentRow?.content ?? null);
+  const requiredFields: string[] = mergedContent.contestant.requiredFields ?? [];
+  const customFields: { label: string; required: boolean }[] =
+    mergedContent.contestant.customFields ?? [];
+
+  const requiredCheck = (field: string, value?: string | null) =>
+    requiredFields.includes(field) && (!value || String(value).trim().length === 0);
+
+  if (requiredCheck("adSoyad", parsed.data.adSoyad)) {
+    return { ok: false, message: "Ad soyad zorunludur." };
+  }
+  if (requiredCheck("dogumTarihi", parsed.data.dogumTarihi)) {
+    return { ok: false, message: "Doğum tarihi zorunludur." };
+  }
+  if (requiredCheck("boyCm", parsed.data.boyCm)) {
+    return { ok: false, message: "Boy bilgisi zorunludur." };
+  }
+  if (requiredCheck("sehir", parsed.data.sehir)) {
+    return { ok: false, message: "Şehir zorunludur." };
+  }
+  if (requiredCheck("telefon", parsed.data.telefon)) {
+    return { ok: false, message: "Telefon zorunludur." };
+  }
+  if (requiredCheck("eposta", parsed.data.eposta)) {
+    return { ok: false, message: "E-posta zorunludur." };
+  }
+  if (requiredCheck("instagramUrl", parsed.data.instagramUrl)) {
+    return { ok: false, message: "Instagram linki zorunludur." };
+  }
+  if (requiredCheck("kendiniTanit", parsed.data.kendiniTanit)) {
+    return { ok: false, message: "Kendini tanıt alanı zorunludur." };
+  }
+
   const vesikalikFoto = formData.get("vesikalikFoto") as File | null;
   const tamBoyFoto = formData.get("tamBoyFoto") as File | null;
   const tanitimVideosu = formData.get("tanitimVideosu") as File | null;
   const onayBelgesi = formData.get("onayBelgesi") as File | null;
   const ekFotograflar = formData.getAll("ekFotograflar") as File[];
 
-  if (!vesikalikFoto || !tamBoyFoto) {
-    return { ok: false, message: "Zorunlu fotoğrafları ekleyin." };
+  if (requiredFields.includes("vesikalikFoto") && !vesikalikFoto) {
+    return { ok: false, message: "Vesikalık fotoğraf zorunludur." };
+  }
+  if (requiredFields.includes("tamBoyFoto") && !tamBoyFoto) {
+    return { ok: false, message: "Tam boy fotoğraf zorunludur." };
   }
 
   const dob = new Date(parsed.data.dogumTarihi);
@@ -98,9 +138,11 @@ export async function submitContestant(formData: FormData) {
     return { ok: false, message: "18 yaş altı için onay belgesi zorunludur." };
   }
 
-  const folder = `contestant/${parsed.data.adSoyad.replace(/\s+/g, "-").toLowerCase()}`;
-  const vesikalikMeta = await uploadFile("contestant_uploads", vesikalikFoto, folder);
-  const tamBoyMeta = await uploadFile("contestant_uploads", tamBoyFoto, folder);
+  const folder = `contestant/${(parsed.data.adSoyad || "aday").replace(/\s+/g, "-").toLowerCase()}`;
+  const vesikalikMeta = vesikalikFoto
+    ? await uploadFile("contestant_uploads", vesikalikFoto, folder)
+    : null;
+  const tamBoyMeta = tamBoyFoto ? await uploadFile("contestant_uploads", tamBoyFoto, folder) : null;
 
   const extraMeta = [] as typeof vesikalikMeta[];
   for (const file of ekFotograflar.slice(0, 5)) {
@@ -118,6 +160,19 @@ export async function submitContestant(formData: FormData) {
 
   const reference = formatReference();
   const supabase = createSupabaseAdminClient();
+  const extraFieldsValues = customFields.map((field, index) => ({
+    label: field.label,
+    required: field.required,
+    value: String(formData.get(`extra_${index}`) || ""),
+  }));
+
+  if (customFields.some((field) => field.required)) {
+    const missing = extraFieldsValues.find((item) => item.required && !item.value.trim());
+    if (missing) {
+      return { ok: false, message: `${missing.label} alanı zorunludur.` };
+    }
+  }
+
   const { error } = await supabase.from("contestant_applications").insert({
     reference,
     ad_soyad: parsed.data.adSoyad,
@@ -134,6 +189,7 @@ export async function submitContestant(formData: FormData) {
     ek_fotograflar: extraMeta,
     tanitim_videosu: tanitimMeta,
     onay_belgesi: onayMeta,
+    extra_fields: extraFieldsValues,
     status: "yeni",
   });
 
